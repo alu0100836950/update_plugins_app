@@ -108,40 +108,44 @@ app-update-automation/
 #### Diagrama de flujo
 
 ```mermaid
-    A[Inicio de la aplicación] --> B[Limpieza inicial de archivos ZIP]
-    B --> C[Lectura de parámetros iniciales]
-    C --> D[Solicitar versiones]
-    D --> E[Selección del tipo de actualización: WC / WP / WC+WP]
-    E --> F[Ejecutar git pullall]
+flowchart TD
+    %% Estilos
+    classDef startEnd fill:#f9f,stroke:#333,stroke-width:2px,color:#000;
+    classDef step fill:#bbf,stroke:#333,stroke-width:1px,color:#000;
+    classDef decision fill:#ffd,stroke:#333,stroke-width:2px,color:#000;
+    classDef premium fill:#cfc,stroke:#333,stroke-width:1px,color:#000;
+    classDef free fill:#fcf,stroke:#333,stroke-width:1px,color:#000;
 
-    F --> G{Tipo de actualización}
-    G -->|WC| H[Actualizar init.php y readme.txt solo WC]
-    G -->|WP| I[Actualizar init.php y readme.txt solo WP]
-    G -->|WC+WP| J[Actualizar init.php y readme.txt para ambos]
+    %% Inicio
+    A[Inicio aplicación]:::startEnd --> B[Limpieza archivos ZIP]:::step
+    B --> C[Leer parámetros: plugins.txt, tipo plugin]:::step
+    C --> D[Solicitar versiones: plugin, WC, WP]:::step
+    D --> E[Seleccionar actualización: WC / WP / WC+WP]:::decision
+    E --> F[Ejecutar git pullall]:::step
 
-    H --> K[Actualizar package.json]
-    I --> K
-    J --> K
+    %% Subgráfico: Actualización archivos
+    subgraph UPDATES [Actualización de archivos]
+        direction TB
+        G{Tipo de actualización}:::decision
+        G -->|WC| H[init.php y readme.txt → WC]:::step
+        G -->|WP| I[init.php y readme.txt → WP]:::step
+        G -->|WC+WP| J[init.php y readme.txt → ambos]:::step
+        H & I & J --> K[Actualizar package.json]:::step
+        K --> L[Mostrar cambios]:::step
+        L --> M[Confirmar commit → git add . → commit → push]:::step
+    end
 
-    K --> L[Mostrar cambios realizados]
-    L --> M[Pulsa ENTER para continuar con commit]
-    M --> N[git add . → git commit → git push]
+    %% Subgráfico: Tipo de plugin
+    subgraph PLUGIN [Procesos adicionales según tipo de plugin]
+        direction TB
+        N{Tipo de plugin}:::decision
+        N -->|PREMIUM| O[npm run build-zip → subir paquete → modificar XML → actualizar Live Demo]:::premium
+        N -->|FREE| P[npm run release → limpiar carpetas viejas → crear carpeta nueva → copiar trunk → commit SVN]:::free
+    end
 
-    N --> O{Tipo de plugin}
-    O -->|PREMIUM| P[Ejecutar npm run build-zip]
-    P --> P2[Subir paquete premium]
-    P2 --> P3[Modificar XML]
-    P3 --> P4[Actualizar Live Demo]
-
-    O -->|FREE| Q[Ejecutar npm run release]
-    Q --> Q2[Acceder a carpeta plugins free]
-    Q2 --> Q3[Eliminar carpeta con tag más viejo]
-    Q3 --> Q4[Crear carpeta con tag nuevo]
-    Q4 --> Q5[Copiar contenido de trunk → nueva versión]
-    Q5 --> Q6[Actualizar SVN (commit)]
-
-    P4 --> R[FIN DEL PROCESO]
-    Q6 --> R
+    %% Fin
+    M --> N
+    O & P --> Q[FIN DEL PROCESO]:::startEnd
 
 ### Descripción de archivos clave
 
