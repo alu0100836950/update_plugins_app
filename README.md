@@ -108,7 +108,6 @@ app-update-automation/
 #### Diagrama de flujo
 
 ```mermaid
-flowchart TD
     A[Inicio de la aplicación] --> B[Limpieza inicial de archivos ZIP]
     B --> C[Lectura de parámetros iniciales]
     C --> D[Solicitar versiones]
