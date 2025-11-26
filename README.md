@@ -145,6 +145,7 @@ flowchart TD
         N --> P[npm run release → limpiar carpetas viejas → crear carpeta nueva → copiar trunk → commit SVN]:::free
     end
 
+    %% Fin
     M --> N
     O --> Q[FIN DEL PROCESO]:::startEnd
     P --> Q
