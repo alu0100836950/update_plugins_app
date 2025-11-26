@@ -105,6 +105,45 @@ app-update-automation/
    - Se pregunta si confirmar y efectuar commit/tag/push.
    - Si es `premium`/`free`, se muestran pasos adicionales (comentados o por implementar).
 
+#### Diagrama de flujo
+
+```mermaid
+flowchart TD
+    A[Inicio de la aplicación] --> B[Limpieza inicial de archivos ZIP]
+    B --> C[Lectura de parámetros iniciales]
+    C --> D[Solicitar versiones]
+    D --> E[Selección del tipo de actualización: WC / WP / WC+WP]
+    E --> F[Ejecutar git pullall]
+
+    F --> G{Tipo de actualización}
+    G -->|WC| H[Actualizar init.php y readme.txt solo WC]
+    G -->|WP| I[Actualizar init.php y readme.txt solo WP]
+    G -->|WC+WP| J[Actualizar init.php y readme.txt para ambos]
+
+    H --> K[Actualizar package.json]
+    I --> K
+    J --> K
+
+    K --> L[Mostrar cambios realizados]
+    L --> M[Pulsa ENTER para continuar con commit]
+    M --> N[git add . → git commit → git push]
+
+    N --> O{Tipo de plugin}
+    O -->|PREMIUM| P[Ejecutar npm run build-zip]
+    P --> P2[Subir paquete premium]
+    P2 --> P3[Modificar XML]
+    P3 --> P4[Actualizar Live Demo]
+
+    O -->|FREE| Q[Ejecutar npm run release]
+    Q --> Q2[Acceder a carpeta plugins free]
+    Q2 --> Q3[Eliminar carpeta con tag más viejo]
+    Q3 --> Q4[Crear carpeta con tag nuevo]
+    Q4 --> Q5[Copiar contenido de trunk → nueva versión]
+    Q5 --> Q6[Actualizar SVN (commit)]
+
+    P4 --> R[FIN DEL PROCESO]
+    Q6 --> R
+
 ### Descripción de archivos clave
 
 - **`update.py`**: Contiene la lógica principal para ejecutar tareas de automatización. Está dividido en clases:
