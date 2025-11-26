@@ -39,10 +39,6 @@ Antes de comenzar, asegúrate de tener instalados los siguientes componentes:
 
 ## Uso
 
-### Ejecución
-
-Uso básico
-----------
 El script principal es `files/update.py`. Ejecútalo desde la raíz del proyecto con Python:
 
 ```bash
@@ -62,16 +58,6 @@ Cada línea representa una entrada. El primer campo es la ruta al repositorio:
 /ruta/al/plugin1
 ```
 El script toma el primer y unico campo como la ruta.
-
-### Ejemplo de uso
-
-#### Procesar múltiples rutas desde un archivo
-
-Si tienes un archivo con rutas de repositorios, puedes usar el parámetro `--file`:
-
-```bash
-python3 update.py --type_plugins premium --file ../src/plugin_test.txt --task update
-```
 
 ### Manejo de errores
 
