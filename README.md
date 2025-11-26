@@ -123,29 +123,31 @@ flowchart TD
     D --> E[Seleccionar actualización: WC / WP / WC+WP]:::decision
     E --> F[Ejecutar git pullall]:::step
 
-    %% Subgráfico: Actualización archivos
+    %% Actualización de archivos
     subgraph UPDATES [Actualización de archivos]
         direction TB
         G{Tipo de actualización}:::decision
-        G -->|WC| H[init.php y readme.txt → WC]:::step
-        G -->|WP| I[init.php y readme.txt → WP]:::step
-        G -->|WC+WP| J[init.php y readme.txt → ambos]:::step
-        H & I & J --> K[Actualizar package.json]:::step
+        G --> H[init.php y readme.txt → WC]:::step
+        G --> I[init.php y readme.txt → WP]:::step
+        G --> J[init.php y readme.txt → ambos]:::step
+        H --> K[Actualizar package.json]:::step
+        I --> K
+        J --> K
         K --> L[Mostrar cambios]:::step
         L --> M[Confirmar commit → git add . → commit → push]:::step
     end
 
-    %% Subgráfico: Tipo de plugin
+    %% Tipo de plugin
     subgraph PLUGIN [Procesos adicionales según tipo de plugin]
         direction TB
         N{Tipo de plugin}:::decision
-        N -->|PREMIUM| O[npm run build-zip → subir paquete → modificar XML → actualizar Live Demo]:::premium
-        N -->|FREE| P[npm run release → limpiar carpetas viejas → crear carpeta nueva → copiar trunk → commit SVN]:::free
+        N --> O[npm run build-zip → subir paquete → modificar XML → actualizar Live Demo]:::premium
+        N --> P[npm run release → limpiar carpetas viejas → crear carpeta nueva → copiar trunk → commit SVN]:::free
     end
 
-    %% Fin
     M --> N
-    O & P --> Q[FIN DEL PROCESO]:::startEnd
+    O --> Q[FIN DEL PROCESO]:::startEnd
+    P --> Q
 
 ### Descripción de archivos clave
 
